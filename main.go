@@ -14,4 +14,5 @@ func main() {
 	if err = db.Ping(); err != nil {
 		log.Printf("error in ping: %v", err)
 	}
+	// develop
 }
