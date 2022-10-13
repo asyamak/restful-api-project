@@ -1,0 +1,8 @@
+{
+    "host": "localhost",
+    "dbname": "Asya",
+    "ssl": "disable",
+    "port": "8888",
+    "password": "admin",
+    "user": "postgres"
+}
