@@ -4,28 +4,33 @@ import (
 	"fmt"
 	"log"
 
+	// _ "github.com/golang-migrate/migrate"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
-var Table = `CREATE TABLE IF NOT EXISTS users (
- 	name VARCHAR(100),
- 	surname VARCHAR(100),
- 	interests VARCHAR(250)
- );`
-
-var user = `CREATE TABLE users (
- 	id INT PRIMARY KEY, 
+var user = `CREATE TABLE IF NOT EXISTS user1(
+ 	id SERIAL PRIMARY KEY, 
  	data VARCHAR
  );`
 
-func InitDB() *sqlx.DB {
+var DB *sqlx.DB
+
+func init() {
+	DB = initDB()
+}
+
+func initDB() *sqlx.DB {
 	conn := fmt.Sprintf("user=%s dbname=%s host=%s port=%s password=%s sslmode=%s", "postgres", "Asyaa", "localhost", "8888", "admin", "disable")
 	db, err := sqlx.Connect("postgres", conn)
 	if err != nil {
 		log.Printf("error initiatedatabase: %v", err)
 	}
 
-	// _, err = migrate.New(
+	if err = CreateTables(db); err != nil {
+		fmt.Println("error create table")
+	}
+	// m, err = migrate.New(
 	// 	"file://./db/migration",
 	// 	conn)
 	// if err != nil {
@@ -39,6 +44,6 @@ func InitDB() *sqlx.DB {
 }
 
 func CreateTables(db *sqlx.DB) error {
-	db.MustExec(Table)
+	db.MustExec(user)
 	return nil
 }

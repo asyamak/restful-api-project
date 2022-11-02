@@ -3,38 +3,34 @@ package user
 import (
 	"log"
 
-	//"restapi/config"
+	"restapi/db"
 
-	//"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx"
-	//_ "github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
-
-	//"honnef.co/go/tools/config"
-
-	//"github.com/jmoiron/sqlx"
 	_ "github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
-type User struct {
-	Firstname string `json:"name" db:"name"`
-	Surname   string `json:"surname" db:"surname"`
-	Interests string `json:"interests" db:"interests" `
+type UserDb struct {
+	Db   *sqlx.DB
+	Id   int `json:"id" db:"id"`
+	Data `json:"data" db:"data"`
 }
 
-type UserDb struct {
-	db *sqlx.DB
+type Data struct {
+	FirstName string `json:"first_name,omitempty"`
+	LastName  string `json:"last_name,omitempty"`
+	Interests string `json:"interests,omitempty"`
 }
 
 func NewUserDb(db *sqlx.DB) *UserDb {
 	return &UserDb{
-		db: db,
+		Db: db,
 	}
 }
 
-func (u *UserDb) Create(name, surname, interests string) error {
-	query := `INSERT INTO users (name,surname,interests) VALUES($1,$2,$3)`
-	_, err := u.db.Exec(query, name, surname, interests)
+func (u *UserDb) Create(data string) error {
+	query := `INSERT INTO user1 (data) VALUES($1) `
+	_, err := db.DB.Exec(query, data)
 	if err != nil {
 		log.Printf("error insert user: %v", err)
 		return err
@@ -42,48 +38,42 @@ func (u *UserDb) Create(name, surname, interests string) error {
 	return nil
 }
 
-func (u *UserDb) Read(surname string) (*User, error) {
-	query := `SELECT * FROM users WHERE surname=:surname`
-	person := &User{}
-	row, err := u.db.NamedQuery(query, map[string]interface{}{"surname": surname})
+func (u *UserDb) Read() (string, error) {
+	query := `SELECT data FROM user1 WHERE id=$1`
+	var str string
+	err := db.DB.QueryRow(query, u.Id).Scan(&str)
 	if err != nil {
 		log.Printf("error on read user: %v ", err)
-		return nil, err
+		return " ", err
 	}
-	for row.Next() {
-		err := row.StructScan(&person)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return person, nil
+	return str, nil
 }
 
-func (u *UserDb) Update(name, toname string) error {
-	query := `UPDATE users SET name=$1 WHERE name=$2`
-	_, err := u.db.Exec(query, name, toname)
+func (u *UserDb) Update(data string) error {
+	query := `UPDATE user1 SET data=$1 WHERE id=$2`
+	_, err := db.DB.Exec(query, data, u.Id)
 	if err != nil {
 		log.Printf("error in update method user: %v", err)
 	}
 	return nil
 }
 
-func (u *UserDb) UpdateInterests(name, interests string) error {
-	query := `UPDATE users SET name=$1 WHERE interests=$2`
-	_, err := u.db.Exec(query, name, interests)
-	if err != nil {
-		log.Printf("error update user: %v", err)
-		return err
-	}
-	return nil
-}
-
-func (u *UserDb) Delete(name string) error {
-	query := `DELETE FROM users WHERE name=$1`
-	_, err := u.db.Exec(query, name)
+func (u *UserDb) Delete() error {
+	query := `DELETE FROM user1 WHERE id=$1`
+	_, err := db.DB.Exec(query, u.Id)
 	if err != nil {
 		log.Printf("error remove user: %v", err)
 		return err
 	}
 	return nil
 }
+
+// func (u *UserDb) UpdateInterests(name, interests string) error {
+// 	query := `UPDATE users SET name=$1 WHERE interests=$2`
+// 	_, err := db.DB.Exec(query, name, interests)
+// 	if err != nil {
+// 		log.Printf("error update user: %v", err)
+// 		return err
+// 	}
+// 	return nil
+// }
