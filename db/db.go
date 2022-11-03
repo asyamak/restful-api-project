@@ -9,10 +9,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var user = `CREATE TABLE IF NOT EXISTS user1(
- 	id SERIAL PRIMARY KEY, 
- 	data VARCHAR
- );`
+var user = `CREATE TABLE IF NOT EXISTS users (
+	id SERIAL PRIMARY KEY, 
+	data VARCHAR
+);`
 
 var DB *sqlx.DB
 
@@ -21,15 +21,14 @@ func init() {
 }
 
 func initDB() *sqlx.DB {
-	conn := fmt.Sprintf("user=%s dbname=%s host=%s port=%s password=%s sslmode=%s", "postgres", "Asyaa", "localhost", "8888", "admin", "disable")
+	conn := fmt.Sprintf("user=%s dbname=%s host=%s port=%s password=%s sslmode=%s", "postgres", "postgres", "localhost", "8000", "postgres", "disable")
 	db, err := sqlx.Connect("postgres", conn)
+	// log.Println("========", db)
 	if err != nil {
-		log.Printf("error initiatedatabase: %v", err)
+		log.Printf("error initialise database: %v", err)
 	}
+	CreateTables(db)
 
-	if err = CreateTables(db); err != nil {
-		fmt.Println("error create table")
-	}
 	// m, err = migrate.New(
 	// 	"file://./db/migration",
 	// 	conn)
@@ -43,7 +42,10 @@ func initDB() *sqlx.DB {
 	return db
 }
 
-func CreateTables(db *sqlx.DB) error {
+func CreateTables(db *sqlx.DB) {
 	db.MustExec(user)
-	return nil
+	// if err != nil {
+	// 	return err
+	// }
+	// log.Println("asd", res)
 }

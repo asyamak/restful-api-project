@@ -8,6 +8,6 @@ import (
 
 func main() {
 	if err := users.Router(); err != nil {
-		log.Printf("error initialise server: %v", err)
+		log.Printf("error in main: initialisation server: %v", err)
 	}
 }

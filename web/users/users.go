@@ -16,6 +16,6 @@ func Router() error {
 	r.HandleFunc("/user/{id}", PutUserHandler).Methods("PUT")
 
 	Port := 4040
-	log.Printf("server is on; port: %v\ns", Port)
+	log.Printf("server is on; port: %v\n", Port)
 	return http.ListenAndServe(fmt.Sprintf(":%v", Port), r)
 }

@@ -1,0 +1,46 @@
+version: '3.9'
+services:
+  postgresdb:
+    image: postgres:14-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+      
+    ports:
+      - "8000:8000"
+    # networks:
+    #   - learning
+    # volumes:
+    # - ./local_pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+    - "5050:5050"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: m.a_k@mail.ru
+      PGADMIN_DEFAULT_PASSWORD: qwer1234
+    # no permission in alem computers.
+    # uncomment at home laptop
+    # volumes:
+    # - ./pgadmin-data:/var/lib/pgadmin
+  api:
+    restart: on-failure
+    build: .
+    ports:
+    - "4040:4040"
+    # dockerfile: "./Dockerfile"
+
+
+
+# Networks to be created to facilitate communication between containers
+# networks:
+#   learning:
+#     driver: bridge
+# volumes: 
+#   local_pgdata:
+#   pgadmin-data:

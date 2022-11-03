@@ -23,12 +23,18 @@ func PostUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err = json.NewDecoder(r.Body).Decode(&u)
 	if err != nil {
-		log.Printf("error json decode: %v ", err)
+		log.Printf("error occured:post handler:json decode: %v ", err)
 	}
-	s := u.FirstName + " " + u.LastName + " " + u.Interests
-	err = u.Create(s)
+	// BEFORE
+	// temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
+	// data := strings.Join(temp, " ")
+
+	// AFTER
+	data := fmt.Sprintf("%s %s %s", u.Data.FirstName, u.Data.LastName, u.Data.Interests)
+
+	err = u.Create(data)
 	if err != nil {
-		log.Printf("error in create handler: %v", err)
+		log.Printf("error occured:post handler:create method: %v", err)
 	}
 	w.WriteHeader(http.StatusCreated)
 }
@@ -42,7 +48,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	var new string
 	new, err = u.Read()
 	if err != nil {
-		log.Printf("error read method: %v", err)
+		log.Printf("error occured:get handler:read method: %v", err)
 	}
 	array := strings.Fields(new)
 	d := &user.Data{
@@ -53,7 +59,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(d)
 	if err != nil {
-		log.Printf("error encoder json: %v", err)
+		log.Printf("error occured:get handler: json encoder: %v", err)
 	}
 	w.WriteHeader(http.StatusOK)
 }
@@ -72,13 +78,19 @@ func PutUserHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		log.Printf("error in decoding json: %s", err)
+		log.Printf("error occured:put handler:json decode: %s", err)
 	}
-	s := user.FirstName + " " + user.LastName + " " + user.Interests
-	fmt.Println(s)
-	err = user.Update(s)
+	// fmt.Println(s)
+
+	// BEFORE
+	// s := user.FirstName + " " + user.LastName + " " + user.Interests
+
+	// AFTER
+	data := fmt.Sprintf("%s %s %s", user.Data.FirstName, user.Data.LastName, user.Data.Interests)
+
+	err = user.Update(data)
 	if err != nil {
-		log.Printf("error serialisation handler update method: %v", err)
+		log.Printf("error occured:put handler:update method: %v", err)
 	}
 	w.WriteHeader(http.StatusOK)
 }
@@ -93,7 +105,7 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err = new.Delete()
 	if err != nil {
-		log.Printf("error delete method in handler: %v", err)
+		log.Printf("error occured:delete handler: delete method: %v", err)
 	}
 	w.WriteHeader(http.StatusNoContent)
 }

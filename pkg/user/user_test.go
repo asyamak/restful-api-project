@@ -17,9 +17,7 @@ func TestCRUD(t *testing.T) {
 		log.Fatalf("an error occured '%s' expected when opening db connection", err)
 	}
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	// storeUser := NewUserDb(sqlxDB)
 	d.DB = sqlxDB
-
 	// creating user struct to compare
 	u := &UserDb{
 		Data: Data{
@@ -47,9 +45,7 @@ func TestReadMethod(t *testing.T) {
 		log.Fatalf("an error occured '%s' expected when opening db connection", err)
 	}
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	// storeUser := NewUserDb(sqlxDB)
 	d.DB = sqlxDB
-
 	// creating user struct to compare
 	u := &UserDb{
 		Id: 33,
@@ -59,7 +55,6 @@ func TestReadMethod(t *testing.T) {
 			Interests: "sun",
 		},
 	}
-
 	temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
 	data := strings.Join(temp, " ")
 	// checking read method
@@ -79,9 +74,7 @@ func TestUpdateMethod(t *testing.T) {
 		log.Fatalf("an error occured '%s' expected when opening db connection", err)
 	}
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	// storeUser := NewUserDb(sqlxDB)
 	d.DB = sqlxDB
-
 	// creating user struct to compare
 	u := &UserDb{
 		Id: 33,
@@ -111,7 +104,6 @@ func TestUpdateMethod(t *testing.T) {
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were infulfilled expectations: %s", err)
 	}
-	//
 }
 
 func TestDeleteMethod(t *testing.T) {
@@ -120,9 +112,7 @@ func TestDeleteMethod(t *testing.T) {
 		log.Fatalf("an error occured '%s' expected when opening db connection", err)
 	}
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	// storeUser := NewUserDb(sqlxDB)
 	d.DB = sqlxDB
-
 	// creating user struct to compare
 	u := &UserDb{
 		Id: 33,
@@ -132,8 +122,7 @@ func TestDeleteMethod(t *testing.T) {
 			Interests: "sun",
 		},
 	}
-	// checking delete method
-
+	// checking delete method§
 	mock.ExpectExec(`DELETE FROM user1`).WithArgs(u.Id).WillReturnResult(sqlmock.NewResult(1, 1))
 	err = u.Delete()
 	if err != nil {
