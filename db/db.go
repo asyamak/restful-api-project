@@ -14,20 +14,33 @@ var user = `CREATE TABLE IF NOT EXISTS users (
 	data VARCHAR
 );`
 
+const (
+	port     = "5432"
+	host     = "postgres"
+	dbname   = "postgres"
+	userdb   = "postgres"
+	password = "postgres"
+	ssl      = "disable"
+)
+
 var DB *sqlx.DB
 
 func init() {
-	DB = initDB()
-}
-
-func initDB() *sqlx.DB {
-	conn := fmt.Sprintf("user=%s dbname=%s host=%s port=%s password=%s sslmode=%s", "postgres", "postgres", "localhost", "8000", "postgres", "disable")
+	conn := fmt.Sprintf("user=%s dbname=%s host=%s port=%s password=%s sslmode=%s", userdb, dbname, host, port, password, ssl)
 	db, err := sqlx.Connect("postgres", conn)
-	// log.Println("========", db)
 	if err != nil {
-		log.Printf("error initialise database: %v", err)
+		log.Fatalf("error initialise database: %v", err)
 	}
-	CreateTables(db)
+	// if err = db.Ping(); err != nil {
+	// 	db.Close()
+	// 	log.Fatalf("error in ping db: %v", err)
+	// }
+
+	_, err = db.Exec(user)
+	if err != nil {
+		log.Fatalf("error exec table: %v", err)
+	}
+	// CreateTables(db)
 
 	// m, err = migrate.New(
 	// 	"file://./db/migration",
@@ -39,13 +52,13 @@ func initDB() *sqlx.DB {
 	// if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 	// 	log.Printf("failed to m.Up() in migrate: %v", err)
 	// }
-	return db
+	DB = db
 }
 
-func CreateTables(db *sqlx.DB) {
-	db.MustExec(user)
-	// if err != nil {
-	// 	return err
-	// }
-	// log.Println("asd", res)
-}
+// func CreateTables(db *sqlx.DB) {
+
+// 	// if err != nil {
+// 	// 	return err
+// 	// }
+// 	// log.Println("asd", res)
+// }

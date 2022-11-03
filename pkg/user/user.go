@@ -29,7 +29,7 @@ func NewUserDb(db *sqlx.DB) *UserDb {
 }
 
 func (u *UserDb) Create(data string) error {
-	query := `INSERT INTO user1 (data) VALUES($1) `
+	query := `INSERT INTO users (data) VALUES($1) `
 	_, err := db.DB.Exec(query, data)
 	if err != nil {
 		log.Printf("error insert user: %v", err)
@@ -39,7 +39,7 @@ func (u *UserDb) Create(data string) error {
 }
 
 func (u *UserDb) Read() (string, error) {
-	query := `SELECT data FROM user1 WHERE id=$1`
+	query := `SELECT data FROM users WHERE id=$1`
 	var str string
 	err := db.DB.QueryRow(query, u.Id).Scan(&str)
 	if err != nil {
@@ -50,7 +50,7 @@ func (u *UserDb) Read() (string, error) {
 }
 
 func (u *UserDb) Update(data string) error {
-	query := `UPDATE user1 SET data=$1 WHERE id=$2`
+	query := `UPDATE users SET data=$1 WHERE id=$2`
 	_, err := db.DB.Exec(query, data, u.Id)
 	if err != nil {
 		log.Printf("error in update method user: %v", err)
@@ -59,7 +59,7 @@ func (u *UserDb) Update(data string) error {
 }
 
 func (u *UserDb) Delete() error {
-	query := `DELETE FROM user1 WHERE id=$1`
+	query := `DELETE FROM users WHERE id=$1`
 	_, err := db.DB.Exec(query, u.Id)
 	if err != nil {
 		log.Printf("error remove user: %v", err)

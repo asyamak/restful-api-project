@@ -28,7 +28,7 @@ func TestCRUD(t *testing.T) {
 	}
 	temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
 	data := strings.Join(temp, " ")
-	mock.ExpectExec(`INSERT INTO user1`).WithArgs(data).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(`INSERT INTO users`).WithArgs(data).WillReturnResult(sqlmock.NewResult(1, 1))
 	// checing create method
 	err = u.Create(data)
 	if err != nil {
@@ -87,7 +87,7 @@ func TestUpdateMethod(t *testing.T) {
 	// checking update method
 	temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
 	data := strings.Join(temp, " ")
-	mock.ExpectExec(`UPDATE user1 SET`).WithArgs(data, u.Id).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(`UPDATE users SET`).WithArgs(data, u.Id).WillReturnResult(sqlmock.NewResult(1, 1))
 	err = u.Update(data)
 	if err != nil {
 		t.Errorf("error UPDATE name with givenname: %v", err)
