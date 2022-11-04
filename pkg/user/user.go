@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/json"
 	"log"
 
 	"restapi/db"
@@ -29,8 +30,12 @@ func NewUserDb(db *sqlx.DB) *UserDb {
 }
 
 func (u *UserDb) Create(data string) error {
+	bytes, err := json.Marshal(u.Data)
+	if err != nil {
+		log.Printf("error marshal:%v", err)
+	}
 	query := `INSERT INTO users (data) VALUES($1) `
-	_, err := db.DB.Exec(query, data)
+	_, err = db.DB.Exec(query, bytes)
 	if err != nil {
 		log.Printf("error insert user: %v", err)
 		return err
@@ -50,8 +55,12 @@ func (u *UserDb) Read() (string, error) {
 }
 
 func (u *UserDb) Update(data string) error {
+	bytes, err := json.Marshal(u.Data)
+	if err != nil {
+		log.Printf("error marshal:%v", err)
+	}
 	query := `UPDATE users SET data=$1 WHERE id=$2`
-	_, err := db.DB.Exec(query, data, u.Id)
+	_, err = db.DB.Exec(query, bytes, u.Id)
 	if err != nil {
 		log.Printf("error in update method user: %v", err)
 	}
