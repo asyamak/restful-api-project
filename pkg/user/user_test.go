@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/json"
 	"log"
 	"strings"
 	"testing"
@@ -18,6 +19,7 @@ func TestCRUD(t *testing.T) {
 	}
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	d.DB = sqlxDB
+
 	// creating user struct to compare
 	u := &UserDb{
 		Data: Data{
@@ -26,11 +28,14 @@ func TestCRUD(t *testing.T) {
 			Interests: "sun",
 		},
 	}
-	temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
-	data := strings.Join(temp, " ")
-	mock.ExpectExec(`INSERT INTO users`).WithArgs(data).WillReturnResult(sqlmock.NewResult(1, 1))
+	bytes, err := json.Marshal(u.Data)
+	if err != nil {
+		log.Printf("error marshal:%v", err)
+	}
+
+	mock.ExpectExec(`INSERT INTO users`).WithArgs(bytes).WillReturnResult(sqlmock.NewResult(1, 1))
 	// checing create method
-	err = u.Create(data)
+	err = u.Create(string(bytes))
 	if err != nil {
 		t.Errorf("error on create method: %v", err)
 	}
@@ -55,10 +60,14 @@ func TestReadMethod(t *testing.T) {
 			Interests: "sun",
 		},
 	}
-	temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
-	data := strings.Join(temp, " ")
+	// temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
+	// data := strings.Join(temp, " ")
+	bytes, err := json.Marshal(u.Data)
+	if err != nil {
+		log.Printf("error marshal:%v", err)
+	}
 	// checking read method
-	mock.ExpectQuery(`SELECT`).WithArgs(u.Id).WillReturnRows(sqlmock.NewRows([]string{"data"}).AddRow(data))
+	mock.ExpectQuery(`SELECT`).WithArgs(u.Id).WillReturnRows(sqlmock.NewRows([]string{"bytes"}).AddRow(bytes))
 	_, err = u.Read()
 	if err != nil {
 		t.Errorf("there were error in read: %v", err)
@@ -84,11 +93,15 @@ func TestUpdateMethod(t *testing.T) {
 			Interests: "sun",
 		},
 	}
+	bytes, err := json.Marshal(u.Data)
+	if err != nil {
+		log.Printf("error marshal:%v", err)
+	}
 	// checking update method
-	temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
-	data := strings.Join(temp, " ")
-	mock.ExpectExec(`UPDATE users SET`).WithArgs(data, u.Id).WillReturnResult(sqlmock.NewResult(1, 1))
-	err = u.Update(data)
+	// temp := []string{u.Data.FirstName, u.Data.LastName, u.Data.Interests}
+	// data := strings.Join(temp, " ")
+	mock.ExpectExec(`UPDATE users SET`).WithArgs(bytes, u.Id).WillReturnResult(sqlmock.NewResult(1, 1))
+	err = u.Update(string(bytes))
 	if err != nil {
 		t.Errorf("error UPDATE name with givenname: %v", err)
 	}
@@ -96,7 +109,7 @@ func TestUpdateMethod(t *testing.T) {
 		t.Errorf("there were infulfilled expectations: %s", err)
 	}
 	// read
-	mock.ExpectQuery(`SELECT`).WithArgs(u.Id).WillReturnRows(sqlmock.NewRows([]string{"data"}).AddRow(data))
+	mock.ExpectQuery(`SELECT`).WithArgs(u.Id).WillReturnRows(sqlmock.NewRows([]string{"data"}).AddRow(bytes))
 	_, err = u.Read()
 	if err != nil {
 		t.Errorf("there were error in read: %v", err)
@@ -123,7 +136,7 @@ func TestDeleteMethod(t *testing.T) {
 		},
 	}
 	// checking delete method§
-	mock.ExpectExec(`DELETE FROM user1`).WithArgs(u.Id).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(`DELETE FROM users`).WithArgs(u.Id).WillReturnResult(sqlmock.NewResult(1, 1))
 	err = u.Delete()
 	if err != nil {
 		log.Printf("error in DELETE method mock: %v", err)

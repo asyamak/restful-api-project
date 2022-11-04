@@ -16,7 +16,7 @@ var user = `CREATE TABLE IF NOT EXISTS users (
 
 const (
 	port     = "5432"
-	host     = "postgres"
+	host     = "localhost"
 	dbname   = "postgres"
 	userdb   = "postgres"
 	password = "postgres"
