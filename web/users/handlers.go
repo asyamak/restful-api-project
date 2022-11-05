@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"restapi/pkg/user"
 
@@ -45,19 +44,19 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 	}
 	u := &user.UserDb{Id: id}
-	var new string
-	new, err = u.Read()
+
+	new, err := u.Read()
 	if err != nil {
 		log.Printf("error occured:get handler:read method: %v", err)
 	}
-	array := strings.Fields(new)
-	d := &user.Data{
-		FirstName: array[0],
-		LastName:  array[1],
-		Interests: array[2],
-	}
+	// array := strings.Fields(new)
+	// d := &user.Data{
+	// 	FirstName: array[0],
+	// 	LastName:  array[1],
+	// 	Interests: array[2],
+	// }
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(d)
+	err = json.NewEncoder(w).Encode(new)
 	if err != nil {
 		log.Printf("error occured:get handler: json encoder: %v", err)
 	}
@@ -107,5 +106,5 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("error occured:delete handler: delete method: %v", err)
 	}
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusOK)
 }

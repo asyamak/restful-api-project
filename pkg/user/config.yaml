@@ -1,0 +1,10 @@
+services:
+  postgres:
+      user: postgres
+      db_name: postgres
+      hostname: localhost
+      port: "8888"
+      password: postgres
+      ssl: disable
+  api:
+    port: "4040"

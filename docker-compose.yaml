@@ -1,0 +1,50 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:13-alpine
+    container_name: postgres
+    restart: always
+    ports: 
+      - "5432:5432"
+    # user: postgres
+    # db_name: postgres
+    # hostname: postgres
+    # port: "5555"
+    # password: postgres
+    # ssl: disable
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: postgres
+        # - POSTGRES_SSL=disable
+        # - POSTGRES_SSL=disable
+
+          # user: postgres
+          # db_name: postgres
+          # hostname: postgres
+          # ports: "5555"
+          # password: postgres
+          # ssl: disable
+    # configs:
+    #   - qwerty
+    #   - disable
+    #   - "5555"
+
+
+
+  api:
+    container_name: api
+    restart: on-failure
+    build: .
+    ports:
+    - "4040:4040"
+
+
+
+# Networks to be created to facilitate communication between containers
+# networks:
+#   learning:
+#     driver: bridge
+# volumes: 
+#   local_pgdata:
+#   pgadmin-data:

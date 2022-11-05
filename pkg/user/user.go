@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"restapi/db"
@@ -43,15 +44,21 @@ func (u *UserDb) Create(data string) error {
 	return nil
 }
 
-func (u *UserDb) Read() (string, error) {
+func (u *UserDb) Read() (*Data, error) {
 	query := `SELECT data FROM users WHERE id=$1`
 	var str string
 	err := db.DB.QueryRow(query, u.Id).Scan(&str)
 	if err != nil {
 		log.Printf("error on read user: %v ", err)
-		return " ", err
+		return nil, err
 	}
-	return str, nil
+	data := &Data{}
+	err = json.Unmarshal([]byte(str), data)
+	if err != nil {
+		log.Printf("error unmarshal: %v\n", err)
+	}
+	fmt.Println(data)
+	return data, nil
 }
 
 func (u *UserDb) Update(data string) error {
