@@ -1,0 +1,5 @@
+development:
+  driver: postgres
+  open: "host=postgres user=postgres dbname=postgres sslmode=disable password=postgres"
+  #GOOSE_DRIVER: postgres
+  # GOOSE_DBSTRING: "host=postgres user=postgres dbname=postgres sslmode=disable password=postgres"
