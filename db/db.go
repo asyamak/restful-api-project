@@ -1,12 +1,13 @@
 package db
 
 import (
+	"embed"
 	"fmt"
 	"log"
 
-	// _ "github.com/golang-migrate/migrate"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/pressly/goose/v3"
 	"github.com/spf13/viper"
 )
 
@@ -14,10 +15,11 @@ var user = `CREATE TABLE IF NOT EXISTS users (
 	id SERIAL PRIMARY KEY, 
 	data VARCHAR
 );`
+
 var DB *sqlx.DB
 
 func Configs() string {
-	viper.SetConfigName("config")
+	viper.SetConfigName("development")
 	viper.AddConfigPath("./")
 	viper.SetConfigType("yaml")
 	err := viper.ReadInConfig()
@@ -34,15 +36,25 @@ func Configs() string {
 	return slice
 }
 
+var embedMigrations embed.FS
+
 func init() {
 	conn := Configs()
 	db, err := sqlx.Connect("postgres", conn)
 	if err != nil {
 		log.Fatalf("error initialise database: %v", err)
 	}
-	_, err = db.Exec(user)
-	if err != nil {
-		log.Fatalf("error exec table: %v", err)
+	goose.SetBaseFS(embedMigrations)
+	if err := goose.SetDialect("postgres"); err != nil {
+		panic(err)
 	}
+	if err := goose.Up(db.DB, "./migration"); err != nil {
+		log.Printf("error goose up: %v", err)
+		// panic(err)
+	}
+	// _, err = db.Exec(user)
+	// if err != nil {
+	// 	log.Fatalf("error exec table: %v", err)
+	// }
 	DB = db
 }
